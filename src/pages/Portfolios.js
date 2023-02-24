@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from "react";
-import axios from 'axios';
-import Sectiontitle from "../components/Sectiontitle";
+import axios from "axios";
+import React, { Suspense, useEffect, useState } from "react";
+import { Helmet } from "react-helmet";
 import Layout from "../components/Layout";
 import Pagination from "../components/Pagination";
 import PortfoliosView from "../components/PortfoliosView";
+import Sectiontitle from "../components/Sectiontitle";
+import Spinner from "../components/Spinner";
 
 function Portfolios() {
   const [portfolios, setPortfoios] = useState([]);
@@ -11,38 +13,53 @@ function Portfolios() {
   const [portfoliosPerPage] = useState(9);
 
   useEffect(() => {
-    axios.get('/api/portfolios')
-      .then( response => {
+    let mounted = true;
+    axios.get("/api/portfolios").then((response) => {
+      if (mounted) {
         setPortfoios(response.data);
-      })
-  }, [portfolios]);
+      }
+    });
+    return () => (mounted = false);
+  }, []);
 
   const indexOfLastPortfolios = currentPage * portfoliosPerPage;
   const indexOfFirstPortfolios = indexOfLastPortfolios - portfoliosPerPage;
-  const currentPortfolios = portfolios.slice(indexOfFirstPortfolios, indexOfLastPortfolios);
+  const currentPortfolios = portfolios.slice(
+    indexOfFirstPortfolios,
+    indexOfLastPortfolios
+  );
 
   const paginate = (e, pageNumber) => {
     e.preventDefault();
     setCurrentPage(pageNumber);
-  }
+  };
 
   return (
     <Layout>
-      <div className="mi-about mi-section mi-padding-top mi-padding-bottom">
-        <div className="container">
-          <Sectiontitle title="Portfolios" />
-          <PortfoliosView portfolios={currentPortfolios}/>
-          {!(portfolios.length > portfoliosPerPage) ? null : (
-            <Pagination 
-              className="mt-50"
-              itemsPerPage={portfoliosPerPage}
-              totalItems={portfolios.length}
-              paginate={paginate}
-              currentPage={currentPage}
-            />
-          )}
+      <Helmet>
+        <title>Portfolios - Angel's Personal Portfolio</title>
+        <meta
+          name="description"
+          content="Angel's Personal Portfolio Portfolios Page"
+        />
+      </Helmet>
+      <Suspense fallback={<Spinner />}>
+        <div className="mi-about mi-section mi-padding-top mi-padding-bottom">
+          <div className="container">
+            <Sectiontitle title="Portfolios" />
+            {<PortfoliosView portfolios={currentPortfolios} />}
+            {!(portfolios.length > portfoliosPerPage) ? null : (
+              <Pagination
+                className="mt-50"
+                itemsPerPage={portfoliosPerPage}
+                totalItems={portfolios.length}
+                paginate={paginate}
+                currentPage={currentPage}
+              />
+            )}
+          </div>
         </div>
-      </div>
+      </Suspense>
     </Layout>
   );
 }

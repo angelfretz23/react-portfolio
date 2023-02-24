@@ -14,11 +14,6 @@ function Socialicons(props){
 
   return (
     <ul className={props.bordered ? 'mi-socialicons mi-socialicons-bordered' : 'mi-socialicons'}>
-      {!socialLinks.instagram ? null : <li>
-        <a rel="noopener noreferrer" target="_blank" href={socialLinks.instagram}>
-          <LineIcon name="instagram"/>
-        </a>
-      </li>}
       {!socialLinks.facebook ? null : <li>
         <a rel="noopener noreferrer" target="_blank" href={socialLinks.facebook}>
           <LineIcon name="facebook"/>

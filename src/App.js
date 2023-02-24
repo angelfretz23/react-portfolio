@@ -1,59 +1,58 @@
-import React from "react";
-import { BrowserRouter, Switch, Route } from "react-router-dom";
+import React, { useState } from "react";
+import * as Icon from "react-feather";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.scss";
-import Home from "./pages/Home";
 import About from "./pages/About";
-import Resumes from "./pages/Resumes";
-import Portfolios from "./pages/Portfolios";
+import BlogDetails from "./pages/BlogDetails";
 import Blogs from "./pages/Blogs";
 import Contact from "./pages/Contact";
-import BlogDetails from "./pages/BlogDetails";
-import ReactGA from 'react-ga';
+import Home from "./pages/Home";
+import Notfound from "./pages/Notfound";
+import Portfolios from "./pages/Portfolios";
+import Resumes from "./pages/Resumes";
 
-/** Google Analytics */
-const trackingID = 'ENTER TRACKER ID';
+function App() {
+  const [lightMode, setLightMode] = useState(false); // Made it true if you want to load your site light mode primary
 
-export const initGA = () => {
-  ReactGA.initialize(trackingID);
-};
+  lightMode
+    ? document.body.classList.add("light")
+    : document.body.classList.remove("light");
 
-export const GApageView = (page) => {
-  ReactGA.pageview(page);
-};
+  const handleMode = () => {
+    if (!lightMode) {
+      setLightMode(true);
+      document.body.classList.add("light");
+    } else {
+      setLightMode(false);
+      document.body.classList.remove("light");
+    }
+  };
 
-export const GAevent = (categoryName, eventName) => {
-  ReactGA.event({       
-      category: categoryName,  // Required
-      action: eventName,       // Required
-      label: 'labelName',       
-      value: 10,       
-      nonInteraction: false     
-  });   
-}
-/** End of Google Analytics */
-
-class App extends React.Component {
-
-  componentDidMount() {
-    initGA();
-    GApageView('landing');
-  }
-  
-  render(){
-    return (
-      <BrowserRouter>
-        <Switch>
-          <Route path="/" exact component={Home} />
-          <Route path="/about" component={About} />
-          <Route path="/resume" component={Resumes} />
-          <Route path="/portfolios" component={Portfolios} />
-          <Route path="/blogs" exact component={Blogs} />
-          <Route path="/blogs/blog-details/:id/:title" component={BlogDetails} />
-          <Route path="/contact" component={Contact} />
-        </Switch>
-      </BrowserRouter>
-    );
-  }
+  return (
+    <BrowserRouter>
+      <div className="light-mode">
+        <span className="icon">
+          <Icon.Sun />
+        </span>
+        <button
+          className={
+            lightMode ? "light-mode-switch active" : "light-mode-switch"
+          }
+          onClick={() => handleMode()}
+        ></button>
+      </div>
+      <Routes>
+        <Route path="/" index element={<Home lightMode={lightMode} />} />
+        <Route path="about" element={<About />} />
+        <Route path="resume" element={<Resumes />} />
+        <Route path="portfolios" element={<Portfolios />} />
+        <Route path="blogs" element={<Blogs />} />
+        <Route path="blogs/:id/:title" element={<BlogDetails />} />
+        <Route path="contact" element={<Contact />} />
+        <Route path="*" element={<Notfound />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App;

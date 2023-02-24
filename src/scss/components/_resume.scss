@@ -40,6 +40,11 @@
     color: #ffffff;
   }
 
+  &-description {
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
   &-ds {
     margin-left: 20px;
   }
@@ -47,6 +52,7 @@
   &-details {
     position: relative;
     padding-left: 50px;
+    font-weight: 100;
 
     &::before {
       content: "";
